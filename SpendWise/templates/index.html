@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'styles/index.css' %}">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container-main-body">
+        <div class="main-screen">
+            <div class="main-screen-inner" id="main-screen-inner">
+                <div class="main-top">
+                    <div class="main-screen-nav">
+                        <div class="logo">
+                            <a href="#">
+                                <button>
+                                    <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                                    <p>SpendWise</p>
+                                </button>
+                            </a>
+                        </div>
+                        <div class="search-bar">
+                            <input type="search" name="search-query" id="">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <div class="tab-listing hide">
+                            <button id="list-up"><i class="fa-solid fa-sort-up"></i></button>
+                            <ul id="listing-list">
+                                <li class="active" data-target="overview-screen">Overview</li>
+                                <li data-target="entry-screen">Entries</li>
+                                <li data-target="income-screen">Income</li>
+                                <li data-target="expense-screen">Expense</li>
+                            </ul>
+                            <button id="list-down"><i class="fa-solid fa-sort-down"></i></button>
+                        </div>
+                    </div>
+                    <div class="wallet-icon">
+                        <img src="https://img.icons8.com/color/96/wallet--v1.png" alt="wallet--v1"/>
+                        <p id="wallet-icon-name">Wallets</p>
+                    </div>
+                </div>
+                <div class="main-contained">
+                    <div class="home-main active off" id="home-main"></div>
+                    <div class="overview-screen off" id="overview-screen">
+                        <div class="categories-section"></div>
+                    </div>
+                    <div class="entry-screen off" id="entry-screen">
+                        <div class="filters-list"></div>
+                    </div>
+                    <div class="income-screen off" id="income-screen"></div>
+                    <div class="expense-screen off" id="expense-screen"></div>
+                </div>
+            </div>
+        </div>
+        <div class="side-screen" id="side-screen">
+            <div class="side-screen-inner" id="side-screen-inner">
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/index.js' %}"></script>
+</body>
+</html>
