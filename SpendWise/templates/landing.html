@@ -1,30 +1,56 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpendWise - Expense Tracker</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'styles/index.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/forms.css' %}">
 </head>
 <body>
     <header>
         <nav>
             <ul>
                 <li><a href="#">Home</a></li>
-                <li><a href="login.html">Login</a></li>
-                <li><a href="signup.html">Sign Up</a></li>
+                <li class="login"><a href="{% url 'login' %}">Login</a></li>
+                <!-- <li><a href="{% url 'signup' %}">Sign Up</a></li> -->
             </ul>
         </nav>
     </header>
     <main>
         <section class="hero">
-            <h1>Welcome to SpendWise</h1>
-            <p>Track your expenses and manage your finances easily.</p>
-            <a href="signup.html" class="cta-button">Get Started</a>
+            <h1>This is <span>SpendWise</span></h1>
+            <p>The expense tracker for the broke, by the broke.</p>
+            <div class="btn-sect">
+                <div class="cta-button" id="abt-btn">
+                    What is This?
+                </div>
+                <a href="{% url 'signup' %}" class="cta-button">Get Started</a>
+            </div>
+        </section>
+        <section id="about-sw" class="hide">
+            <div class="top-abt">
+                <div class="cta-button" id="btn-back">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </div>
+                <h1>SpendWise: The Expense Tracker for the Broke!</h1>
+            </div>
+            <div class="abt-holder">
+                <p>Ever felt like you were single-handedly financing the local coffee shop's expansion while your bank account was in a perpetual state of despair? Well, you're not alone! This is SpendWise, an expense tracker I built when I realized my wallet was basically on a rollercoaster with no brakes.</p>
+                <p>It all started when my piggy bank filed for bankruptcy. I mean, who knew that a few impulse purchases here & there could be so detrimental to financial health? SpendWise was built so I could track my personal spending(Also cause I was bored and wanted to do something).</p>
+                <p>It's for the Young, Dumb and Broke... So sign up, take a look around(If you will) and track the bucks in your pocket. 🚀💰</p>
+            </div>
         </section>
     </main>
     <footer>
         <p>&copy; 2023 SpendWise. All rights reserved.</p>
     </footer>
+
+    <script src="{% static 'js/forms.js' %}"></script>
 </body>
 </html>

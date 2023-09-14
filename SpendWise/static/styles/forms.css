@@ -1,0 +1,251 @@
+body {
+    background: linear-gradient(
+        45deg, 
+        var(--green-logo) 50%, 
+        var(--org-logo)  30%
+    );
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    align-items: center;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+body::before {
+    background-color: var(--green-logo);
+    background: linear-gradient(90deg, var(--green-logo) 10%, rgb(0 221 152) 100%);
+    position: fixed;
+    content: '';
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+
+body::after {
+    background-color: var(--org-logo);
+    background: linear-gradient(90deg, rgb(224 103 0) 10%, var(--org-logo));
+    position: fixed;
+    content: '';
+    width: 100%;
+    height: 100%;
+    transform: translateX(10%);
+    right: 0;
+    top: 0;
+    animation-name: bg-movement;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+}
+
+body::after,
+body::before {
+    transform: rotate(0deg);
+    z-index: -1;
+    transition: .6s;
+}
+
+header,
+footer {
+    width: 100%;
+}
+
+header ul {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    align-items: center;
+    list-style-type: none;
+}
+
+ul a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.login {
+    padding: 5px 12px;
+    background-color: var(--sslight-bg);
+}
+
+
+/* header ul,
+footer {
+    background-color: var(--mslight-bg);
+} */
+
+footer {
+    text-align: center;
+}
+
+footer p {
+    padding: 1rem;
+}
+
+main {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    color: white;
+    text-align: center;
+}
+
+.hero {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.hide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: translateY(1000%);
+}
+
+.btn-sect {
+    display: flex;
+    align-items: center;
+}
+
+section.hero h1 {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+section.hero p {
+    font-size: 1.5rem;
+}
+
+section span {
+    text-decoration: underline;
+    text-decoration-skip-ink: none;
+    text-decoration-thickness: initial;
+    text-decoration-style: wavy;
+    text-decoration-color: var(--sw-red);
+}
+
+.cta-button {
+    cursor: pointer;
+    padding: 10px;
+    text-decoration: none;
+    background-color: var(--sslight-bg);
+    color: initial;
+    margin: 1rem;
+    box-shadow: 8px 8px 0px 0px rgb(238 251 255 / 51%);
+}
+
+.cta-button:hover,
+.login:hover {
+    box-shadow: 0px 0px 0px 5px rgb(238 251 255 / 51%);
+    transform: scale(1.1);
+}
+
+.is-abt {
+    background-color: var(--sslight-bg);
+    color: black;
+}
+
+.is-abt .login,
+.is-abt .cta-button {
+    background-color: black;
+    color: var(--sslight-bg);
+}
+
+#about-sw {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.top-abt {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    text-align: left;
+}
+
+.abt-holder {
+    background-color: var(--sslight-bg);
+    color: black;
+    margin: 1rem 10rem;
+    font-size: 1.5rem;
+    height: 100%;
+    text-align: left;
+    transition: .3s;
+    overflow: auto;
+}
+
+.abt-holder * {
+    transition: .3s;
+}
+
+.abt-holder p {
+    margin: 1rem 0;
+}
+
+
+/* Animation */
+@keyframes bg-movement {
+    0% {
+        transform: translateX(10%);
+    } 25% {
+        transform: translateX(90%);
+    } 50% {
+        transform: translateX(25%);
+    } 75% {
+        transform: translateX(75%);
+    } 100% {
+        transform: translateX(10%);
+    }
+}
+
+/* responsive design */
+@media (max-width: 900px) {
+    .abt-holder {
+        margin: 1rem 5rem;
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 750px) {
+    .abt-holder {
+        margin: 1rem 5rem;
+        font-size: 1.3rem; 
+    }
+}
+
+@media (max-width: 610px) {
+    .abt-holder {
+        margin: 1rem 2rem;
+        font-size: 1.3rem; 
+    }
+}
+
+@media (max-width: 450px) {
+    section.hero h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    section.hero p {
+        font-size: 1.2rem;
+    }
+    .abt-holder {
+        margin: 1rem 2rem;
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 470px) {
+    .abt-holder {
+        margin: 1rem 2rem;
+        font-size: 1rem;
+    }
+}
