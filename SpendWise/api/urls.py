@@ -4,7 +4,8 @@ from .views import *
 urlpatterns = [
     path("", UserListView.as_view(), name="user-list"),
     path('current-account', CurrentAccountView.as_view(), name='current-account'),
-    path('register', UserRegistrationAPIView.as_view(), name='user-registration'),
+    path('register', user_signup, name='user-registration'),
+    path('login', user_login, name='user-login'),
 
     path('categories', CatListsView.as_view(), name='categories'),
     path('categories/create', create_category, name='categories-create'),

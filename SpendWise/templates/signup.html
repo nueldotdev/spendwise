@@ -14,17 +14,25 @@
     <title>Spend Wise - Sign Up</title>
 </head>
 <body>
+    <a href="/" class="back">
+        <button class="cta-button" id="btn-back">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+    </a>
+    <div class="container">
+        <h2>Sign Up for SpendWise</h2>
+        <form id="registration-form">
+            <p id="token" hidden>{{ csrf_token }}</p>
+            <input type="text" placeholder="Username" name="username" required>
+            <input type="text" placeholder="First Name" name="first_name" required>
+            <input type="text" placeholder="Last Name" name="last_name" required>
+            <input type="password" placeholder="Password" name="password" required>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+    <div id="registration-result"></div>
 
-<div class="container">
-    <h2>Sign Up for SpendWise</h2>
-    <form>
-        <input type="text" placeholder="Full Name" required>
-        <input type="email" placeholder="Email" required>
-        <input type="password" placeholder="Password" required>
-        <button type="submit">Sign Up</button>
-    </form>
-    <p>Already have an account? <a href="login.html">Login</a></p>
-</div>
-
+    <script src="{% static 'js/signup.js' %}"></script>
 </body>
 </html>

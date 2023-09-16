@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.models import User
+from django.contrib import auth
+from django.http import JsonResponse
 from rest_framework.permissions import AllowAny
 
 from .serializers import *
@@ -11,8 +13,8 @@ from .models import *
 
 
 class UserListView(generics.ListAPIView):
-    queryset = Account.objects.all()
-    serializer_class = AccountSerializer
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 class CatListsView(generics.ListAPIView):
@@ -174,3 +176,44 @@ class UserRegistrationAPIView(APIView):
                 return Response({'detail': 'Passwords do not match.'}, status=status.HTTP_400_BAD_REQUEST)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def user_signup(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        password = request.POST['password']
+
+        
+        if User.objects.filter(username=username).exists():
+            return Response({'detail': 'Username already exists!'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, password=password)
+            user.save()
+
+            user_login = auth.authenticate(username=username, password=password)
+            auth.login(request, user_login)
+
+            user_model = User.objects.get(username=username)
+            new_acc = Account.objects.create(user_id=user_model, first_name=first_name, last_name=last_name)
+            new_acc.save()
+            return Response({'detail': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+    # return redirect('index')
+
+
+@api_view(['POST'])
+def user_login(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    user = auth.authenticate(request, username=username, password=password)
+
+    if user is not None:
+        # The user is authenticated, log them in
+        auth.login(request, user)
+        return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
+    else:
+        # Authentication failed
+        return Response({'message': 'Login failed'}, status=status.HTTP_400_BAD_REQUEST)

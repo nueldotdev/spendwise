@@ -14,13 +14,23 @@
     <title>Spend Wise - Login</title>
 </head>
 <body>
+    <a href="/" class="back">
+        <button class="cta-button" id="btn-back">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+    </a>
     <div class="container">
         <h2>Login to SpendWise</h2>
-        <form>
-            <input type="text" placeholder="Username or Email" required>
-            <input type="password" placeholder="Password" required>
+        <form id="registration-form">
+            <p id="token" hidden>{{ csrf_token }}</p>
+            <input type="text" placeholder="Username or Email" id="username" required>
+            <input type="password" placeholder="Password" id="password" required>
             <button type="submit">Login</button>
         </form>
-        <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+        <p>Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
+        <div id="registration-result"></div>
+
+
+        <script src="{% static 'js/login.js' %}"></script>
 </body>
 </html>
