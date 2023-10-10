@@ -32,6 +32,27 @@ class IncomeSerializer(serializers.ModelSerializer):
         model = Income
         fields = '__all__'
 
+
+class WalletCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Wallet
+        fields = ('owner', 'name', 'budget')
+
+
+class IncomeEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Income
+        fields = ('wallet', 'title', 'amount', 'category')
+
+
+
+class ExpenseEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Expense
+        fields = ('wallet', 'title', 'amount', 'category')
+
+
+
 class EntriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = None  # This will be set dynamically in the view
