@@ -8,6 +8,9 @@ from django.contrib import auth
 from django.http import JsonResponse
 from rest_framework.permissions import AllowAny
 
+
+from django.middleware.csrf import get_token
+
 from .serializers import *
 from .models import *
 
@@ -24,6 +27,7 @@ class CatListsView(generics.ListAPIView):
 class CatCreateView(generics.CreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -50,25 +54,31 @@ def create_category(request):
 def user_wallets(request):
     main_user = User.objects.get(username=request.user.username)
     user_acct = Account.objects.get(user_id=main_user)
-    wallets = Wallet.objects.filter(owner=user_acct)
-    total_income = 0
-    total_exp = 0
 
-    if wallets:
+    try:
+        wallets = Wallet.objects.filter(owner=user_acct)
+
         for i in wallets:
-            income_entry = Income.objects.filter(wallet=i)
-            expense_entry = Expense.objects.filter(wallet=i)
-            for k in income_entry:
-                total_income = total_income + k.amount
-            for k in expense_entry:
-                total_exp = total_exp + k.amount
+            try:
+                income_entry = Income.objects.filter(wallet=i)
+                expense_entry = Expense.objects.filter(wallet=i)
+                total_income = 0
+                total_exp = 0
+                for k in income_entry:
+                    total_income = total_income + k.amount
+                for k in expense_entry:
+                    total_exp = total_exp + k.amount
 
-            i.balance = total_income - total_exp
-            i.total_income = total_income
-            i.total_expense = total_exp
-            i.save()
-
-    serializer = WalletSerializer(wallets, many=True)
+                i.balance = total_income - total_exp
+                i.total_income = total_income
+                i.total_expense = total_exp
+                i.save()
+            except Income.DoesNotExist and Expense.DoesNotExist:
+                return Response({'message': 'Wallet has no entries'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer = WalletSerializer(wallets, many=True)
+    except Wallet.DoesNotExist:
+        return Response({'message': 'Wallet does not exist'}, status=status.HTTP_400_BAD_REQUEST)
     
     return Response(serializer.data)
 
@@ -91,24 +101,24 @@ def wallet_details(request, id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['GET', 'POST'])
-def expense_entry(request, id):
-    main_user = User.objects.get(username=request.user.username)
-    user_acct = Account.objects.get(user_id=main_user)
+# @api_view(['GET', 'POST'])
+# def expense_entry(request, id):
+#     main_user = User.objects.get(username=request.user.username)
+#     user_acct = Account.objects.get(user_id=main_user)
 
-    try:
-        wallets = Wallet.objects.get(id=id)
+#     try:
+#         wallets = Wallet.objects.get(id=id)
 
-        if request.method == 'GET':
-            if wallets.owner == user_acct:
-                expense_made = Expense.objects.filter(wallet=wallets)
-                serializer = ExpenseSerializer(expense_made)
+#         if request.method == 'GET':
+#             if wallets.owner == user_acct:
+#                 expense_made = Expense.objects.filter(wallet=wallets)
+#                 serializer = ExpenseSerializer(expense_made)
 
-                return Response(serializer.data)
-            else:
-                return Response(status=status.HTTP_403_FORBIDDEN)
-    except Wallet.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+#                 return Response(serializer.data)
+#             else:
+#                 return Response(status=status.HTTP_403_FORBIDDEN)
+#     except Wallet.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 def entries_view(request, id):
@@ -120,22 +130,25 @@ def entries_view(request, id):
 
         if request.method == 'GET':
             if wallets.owner == user_acct:
-                expenses = Expense.objects.filter(wallet=wallets)
-                incomes = Income.objects.filter(wallet=wallets)
+                try:
+                    expenses = Expense.objects.filter(wallet=wallets)
+                    incomes = Income.objects.filter(wallet=wallets)
 
-                ex_in = list(expenses) + list(incomes)
-                combined_objects = sorted(ex_in, key=lambda obj: obj.entry, reverse=True)
+                    ex_in = list(expenses) + list(incomes)
 
-                # Set the model attribute in the serializer's Meta class based on the object type
-                EntriesSerializer.Meta.model = Expense if isinstance(combined_objects[0], Expense) else Income
-
-                serializer = EntriesSerializer(combined_objects, many=True)
-
-                return Response(serializer.data)
+                    if ex_in:
+                        EntriesSerializer.Meta.model = Expense if isinstance(ex_in[0], Expense) else Income
+                        serializer = EntriesSerializer(ex_in, many=True)
+                        return Response(serializer.data)
+                    else:
+                        return Response(status=status.HTTP_404_NOT_FOUND)
+                except:
+                    return Response(status=status.HTTP_404_NOT_FOUND)
             else:
                 return Response(status=status.HTTP_403_FORBIDDEN)
     except Wallet.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 
 class CurrentAccountView(generics.RetrieveAPIView):
@@ -178,6 +191,8 @@ class UserRegistrationAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+#User sign up and log in
+
 @api_view(['POST'])
 def user_signup(request):
     if request.method == 'POST':
@@ -217,3 +232,161 @@ def user_login(request):
     else:
         # Authentication failed
         return Response({'message': 'Login failed'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# # Entry handling
+# @api_view(['POST'])
+# def expense_entry(request, id):
+#     try:
+#         main_user = User.objects.get(username=request.user.username)
+#         user_acct = Account.objects.get(user_id=main_user)
+#         get_wallet = Wallet.objects.get(id=id)
+
+#         if get_wallet.owner != user_acct:
+#             return Response({'message': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+#         else:
+#             title = request.POST['title']
+#             amount = request.POST['amount']
+#             category = request.POST['category']
+
+#             category_name = Category.objects.get(name=category)
+
+#             serializer = ExpenseEntrySerializer(wallet=get_wallet, title=title, amount=amount, category=category_name)
+
+
+#             if serializer.is_valid():
+#                 serializer.save()
+
+#                 return Response({'message': 'Entry was successful', 'data': serializer.data}, status=status.HTTP_201_CREATED)
+#             else:
+#                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     except User.DoesNotExist:
+#         return Response({'message': 'User does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+#     except Account.DoesNotExist:
+#         return Response({'message': 'Account does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+#     except Wallet.DoesNotExist:
+#         return Response({'message': 'Wallet does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class createWalletView(generics.CreateAPIView):
+    serializer_class = WalletCreateSerializer
+
+    def post(self, request):
+        try:
+            main_user = User.objects.get(username=request.user.username)
+            user_acct = Account.objects.get(user_id=main_user)
+
+            name = request.data.get('name')
+            budget = request.data.get('budget')
+
+            data_to_serialize = {
+                'owner': user_acct.id,
+                'name': name,
+                'budget': budget
+            }
+
+            serializer = WalletCreateSerializer(data=data_to_serialize)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'message': 'Wallet Created', 'data': serializer.data}, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except User.DoesNotExist:
+            return Response({'message': 'User does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        except Account.DoesNotExist:
+            return Response({'message': 'Account does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ExpenseEntryView(generics.CreateAPIView):
+    serializer_class = ExpenseEntrySerializer
+
+    def post(self, request, id):
+        try:
+            main_user = User.objects.get(username=request.user.username)
+            user_acct = Account.objects.get(user_id=main_user)
+            get_wallet = Wallet.objects.get(id=id)
+
+            if get_wallet.owner != user_acct:
+                return Response({'message': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+            else:
+                title = request.data.get('title')
+                amount = request.data.get('amount')
+                category = request.data.get('category')
+
+                category_name = Category.objects.get(name=category)
+
+                # Manually insert data into the serializer
+                data_to_serialize = {
+                    'wallet': get_wallet.id,
+                    'title': title,
+                    'amount': amount,
+                    'category': category_name.id,
+                }
+
+                serializer = ExpenseEntrySerializer(data=data_to_serialize)
+
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response({'message': 'Entry was successful', 'data': serializer.data}, status=status.HTTP_201_CREATED)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except User.DoesNotExist:
+            return Response({'message': 'User does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        except Account.DoesNotExist:
+            return Response({'message': 'Account does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        except Wallet.DoesNotExist:
+            return Response({'message': 'Wallet does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class IncomeEntryView(generics.CreateAPIView):
+    serializer_class = IncomeEntrySerializer
+
+    def post(self, request, id):
+        try:
+            main_user = User.objects.get(username=request.user.username)
+            user_acct = Account.objects.get(user_id=main_user)
+            get_wallet = Wallet.objects.get(id=id)
+
+            if get_wallet.owner != user_acct:
+                return Response({'message': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+            else:
+                title = request.data.get('title')
+                amount = request.data.get('amount')
+                category = request.data.get('category')
+
+
+                category_name = Category.objects.get(name=category)
+
+                # Manually insert data into the serializer
+                data_to_serialize = {
+                    'wallet': get_wallet.id,
+                    'title': title,
+                    'amount': amount,
+                    'category': category_name.id,
+                }
+
+                serializer = IncomeEntrySerializer(data=data_to_serialize)
+
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response({'message': 'Entry was successful', 'data': serializer.data}, status=status.HTTP_201_CREATED)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except User.DoesNotExist:
+            return Response({'message': 'User does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        except Account.DoesNotExist:
+            return Response({'message': 'Account does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        except Wallet.DoesNotExist:
+            return Response({'message': 'Wallet does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+def get_csrf(request):
+    csrf_token = get_token(request)
+    return JsonResponse({'csrf_token': csrf_token})

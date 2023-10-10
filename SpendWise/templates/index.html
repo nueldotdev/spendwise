@@ -10,10 +10,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'styles/index.css' %}">
-    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'styles/forms.css' %}">
+    <title>SpendWise - Home</title>
 </head>
 <body>
     <div class="container-main-body">
+        <div class="loader-bar" id="loading-bar"></div>
         <div class="main-screen">
             <div class="main-screen-inner" id="main-screen-inner">
                 <div class="main-top">
@@ -51,12 +53,8 @@
                 </div>
                 <div class="main-contained">
                     <div class="home-main active off" id="home-main"></div>
-                    <div class="overview-screen off" id="overview-screen">
-                        <div class="categories-section"></div>
-                    </div>
-                    <div class="entry-screen off" id="entry-screen">
-                        <div class="filters-list"></div>
-                    </div>
+                    <div class="overview-screen off" id="overview-screen"></div>
+                    <div class="entry-screen off" id="entry-screen"></div>
                     <div class="income-screen off" id="income-screen"></div>
                     <div class="expense-screen off" id="expense-screen"></div>
                 </div>
@@ -65,6 +63,58 @@
         <div class="side-screen" id="side-screen">
             <div class="side-screen-inner" id="side-screen-inner">
             </div>
+            <button></button>
+        </div>
+    </div>
+
+    <div class="entry-forms">
+        <div class="container" id="expense-form">
+            <h2>Expense Entry</h2>
+            <div class="back-arrow-btn"><i class="fa-solid fa-arrow-left"></i></div>
+            <p class="identified_wallet" id="expense-id" hidden></p>
+            <p class="named_wallet" id="named-ex" hidden></p>
+            <p id="token" hidden>{{ csrf_token }}</p>
+            <form id="expense-form-main">
+                <input type="text" placeholder="Title" id="title-ex" name="title" required>
+                <input type="number" placeholder="Amount" id="amount-ex" name="amount" required>
+                <select name="category" id="category_income-ex" class="category_select">
+                    <option disabled selected>Select a category...</option>
+                </select>
+                <button type="submit">Save Entry</button>
+            </form>
+            <div id="expense-result"></div>
+            <!-- <script src="{% static 'js/login.js' %}"></script> -->
+        </div>
+
+        <div class="container" id="income-form">
+            <h2>Income Entry</h2>
+            <div class="back-arrow-btn"><i class="fa-solid fa-arrow-left"></i></div>
+            <p class="identified_wallet" id="income-id" hidden></p>
+            <p class="named_wallet" id="named-in" hidden></p>
+            <p id="token" hidden>{{ csrf_token }}</p>
+            <form id="income-form-main">
+                <input type="text" placeholder="Title" id="title-in" name="title" required>
+                <input type="number" placeholder="Amount" id="amount-in" name="amount" required>
+                <select name="category" id="category_income-in" class="category_select">
+                    <option disabled selected>Select a category...</option>
+                </select>
+                <button type="submit">Save Entry</button>
+            </form>
+            <div id="income-result"></div>
+            <!-- <script src="{% static 'js/login.js' %}"></script> -->
+        </div>
+
+        <div class="container" id="wallet-form">
+            <h2>Create Wallet</h2>
+            <div class="back-arrow-btn"><i class="fa-solid fa-arrow-left"></i></div>
+            <p id="token" hidden>{{ csrf_token }}</p>
+            <form id="wallet-form-main">
+                <input type="text" placeholder="Name" id="wallet-name" name="name" required>
+                <input type="number" placeholder="Budget" value="5000" id="wallet-budget" name="budget" required>
+                <button type="submit">Create</button>
+            </form>
+            <div id="wallet-result"></div>
+            <!-- <script src="{% static 'js/login.js' %}"></script> -->
         </div>
     </div>
 
