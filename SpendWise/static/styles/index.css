@@ -10,15 +10,18 @@
     --green-logo: rgb(23 201 0);
     --org-logo: rgb(224 165 0);
 
+
+    --form-input-outline: rgb(55 239 59 / 51%);
+
     --sw-blue: #0093ff;
     --sw-orange: #c4451a;
     --sw-green: rgb(23 197 0);
     --sw-red: #ff2a2a;
 }
 
-
+/* Scroll Bar Styling */
 ::-webkit-scrollbar {
-    width: 10px;
+    width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -42,28 +45,40 @@
     transition: .6s;
 }
 
-.loader-bar {
-    visibility: hidden;
+.loader-box {
+    /* visibility: hidden; */
     position: absolute;
     width: 100%;
-    height: 5px;
-    background: rgba(213, 255, 183, 0.28);
-}
-
-.loader-bar.active {
-    visibility: visible;
-}
-
-.loader-bar.active::after {
-    position: absolute;
-    left: 0;
-    content: '';
+    display: none;
+    align-items: center;
+    justify-content: center;
     height: 100%;
-    width: 0%;
-    background-color: var(--sw-green);
-    animation-name: loader;
-    animation-duration: 2.5s;
-    animation-iteration-count: infinite;
+    background: rgba(0, 0, 0, 0.079);
+}
+
+.loader-box.active {
+    display: flex;
+}
+
+.loader-parent {
+    padding: 3rem;
+    background: var(--sslight-bg);
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px 0px var(--search-light);
+}
+
+.loader {
+    border: 6px solid var(--mslight-bg);
+    border-top: 6px solid var(--green-logo);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .container-main-body {
@@ -418,6 +433,8 @@ div.home-main.none {
 
 .card-amount {
     font-size: 20px;
+    width: 30%;
+    text-align: end;
 }
 
 .card-amount span {
@@ -674,20 +691,34 @@ div.home-main.none {
     }
 
     .entry-card img {
-        width: 20%;
+        width: 16%;
+    }
+
+    .entry-card .card-details {
+        display: flex;
+        align-items: center;
+        width: 100%;
     }
 
     .entry-card .card-details p:first-of-type {
-        font-size: 20px;
+        font-size: 18px;
+        width: 88%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .entry-card .sub-note {
         font-size: 12px;
+        width: 85%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .card-amount {
         font-size: 15px;
-        width: 20%;
+        width: 40%;
         text-align: end;
     }
 }

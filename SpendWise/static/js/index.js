@@ -14,7 +14,7 @@ let csrfToken = ''
 const ulContained = document.getElementById('listing-list');
 const hiddenTabs = document.querySelector('.tab-listing');
 const walletName = document.getElementById('wallet-icon-name');
-
+const loader = document.getElementById('loading-box');
 
 document.addEventListener('DOMContentLoaded', () => {
 	fetch("api/token")
@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		sideUserInfo();
 		getWallets();
 		catFetch();
+		loader.classList.remove('active');
 	});
 });
 
@@ -70,6 +71,7 @@ tabs.forEach(tab => {
 // Self explanatory, getting the user's info and stuff
 function getInfo() {
 	return new Promise((resolve, reject) => {
+		loader.classList.add('active');
 		fetch('/api/current-account', {
 			method: 'GET'
 		}).then(response => {
@@ -232,7 +234,7 @@ const expenseScreen = document.getElementById('expense-screen');
 function getWalletDetails(params, param1) {
 	//NOTE: (param) => wallet.id
 	//NOTE: (param1) => wallet.name
-
+	loader.classList.add('active');
 	const getIdentifier = document.querySelectorAll('.identified_wallet');
 	const setWalletName = document.querySelectorAll('.named_wallet');
 	getIdentifier.forEach(element => {
@@ -365,8 +367,10 @@ function getWalletDetails(params, param1) {
 			throw new Error('Failed to fetch data');
 		}
 	}).then(data => {
+		data.reverse();
+
 		for (let index = 0; index < data.length; index++) {
-			if (data[index].type == 'Income') {
+			if (data[index].type_x == 1) {
 				incomes.push(data[index])
 			} else {
 				expenses.push(data[index])
@@ -396,7 +400,8 @@ function getWalletDetails(params, param1) {
 			const formattedDate = `${day}-${monthName}-${year}`;
 			let type = ''
 
-			if (data.type == 'Income') {
+			if (data.type_x == 1) {
+				console.log(`This is type_x: ${data.type_x}`)
 				type = `<i class="fa-solid fa-plus"></i>`
 			} else {
 				type = `<i class="fa-solid fa-minus"></i>`
@@ -423,13 +428,13 @@ function getWalletDetails(params, param1) {
 		console.log("Incomes = " + incomes);
 		console.log("Expenses = " + expenses);
 	})
+	loader.classList.remove('active');
 }
 
 
 // Accessing all entry values passed in param[0]
 function incomeEx(params, param1) {
 	params.forEach(data => {
-
 		// Formatting the date of the entry correctly again!
 		const dateObject = new Date(data.entry);
 
@@ -453,7 +458,7 @@ function incomeEx(params, param1) {
 		let type = ''
 
 		// Assigning Icons to entry types, minus for an expense and plus for an income
-		if (data.type == 'Income') {
+		if (data.type_x == 1) {
 			type = `<i class="fa-solid fa-plus"></i>`
 		} else {
 			type = `<i class="fa-solid fa-minus"></i>`
@@ -597,13 +602,15 @@ expenseForm.addEventListener('submit', function (e) {
     e.preventDefault(); // Prevent the form from submitting normally
     // const token = document.getElementById('token').innerText;
     // console.log(token)
-    
+    loader.classList.add('active');
     // Get form data
 	const name = document.getElementById('named-ex').innerText;
 	const id = document.getElementById('expense-id').innerText;
-	const title = document.getElementById('title-ex').value
+	const title = document.getElementById('title-ex').value;
     const amount = parseFloat(document.getElementById('amount-ex').value) // Make sure it's a number
     const category = document.getElementById('category_income-ex').value
+	const description = document.getElementById('descrip-ex').value;
+	const type_x = document.getElementById('entry-type-ex').value;
 
 
 
@@ -611,6 +618,8 @@ expenseForm.addEventListener('submit', function (e) {
 	const formData = {
         title: title,
         amount: amount,
+		description: description,
+		type_x: type_x,
         category: category
     };
     
@@ -630,7 +639,6 @@ expenseForm.addEventListener('submit', function (e) {
         if (data.message === 'Entry was successful') {
 			console.log(data.message)
             resultDiv.innerHTML = '<p>Entry was successful!</p>';
-			const loader = document.getElementById('loading-bar');
 			loader.classList.add('active')
 
 			// Getting the expense thingy
@@ -699,6 +707,7 @@ expenseForm.addEventListener('submit', function (e) {
 			console.log(data.message)
             resultDiv.innerHTML = '<p>Entry failed. Please check your input.</p>';
             // Display an error message to the user
+			loader.classList.remove('active')
         }
     })
     .catch(error => {
@@ -712,7 +721,7 @@ expenseForm.addEventListener('submit', function (e) {
 incomeForm.addEventListener('submit', function (e) {
     e.preventDefault(); // Prevent the form from submitting normally
     // const token = document.getElementById('token').innerText;
-    
+    loader.classList.add('active');
     // Get form data
 	const name = document.getElementById('named-ex').innerText;
 	const id = document.getElementById('expense-id').innerText;
@@ -720,12 +729,16 @@ incomeForm.addEventListener('submit', function (e) {
 	const title = document.getElementById('title-in').value;
     const amount = parseFloat(document.getElementById('amount-in').value);
 	const category = document.getElementById('category_income-in').value;
+	const description = document.getElementById('descrip-ex').value;
+	const type_x = document.getElementById('entry-type-ex').value;
 
 
 	const formData = {
         title: title,
         amount: amount, 
-        category: category,
+        description: description,
+		type_x: type_x,
+        category: category
     };
 
     
@@ -747,8 +760,6 @@ incomeForm.addEventListener('submit', function (e) {
 
 			// Can't find a way to change the ui to show the updated details
 			// So I'll do it manually and find a way later
-			const loader = document.getElementById('loading-bar');
-			loader.classList.add('active');
 
 			// Getting the income thingy
 			const incomeUpdate = document.getElementById("total-income-entered");
@@ -813,6 +824,7 @@ incomeForm.addEventListener('submit', function (e) {
         } else {
             resultDiv.innerHTML = '<p>Entry failed. Please check your input.</p>';
             // Display an error message to the user
+			loader.classList.remove('active')
         }
     })
     .catch(error => {

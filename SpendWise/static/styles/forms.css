@@ -260,23 +260,28 @@ section span {
     color: white;
     border: none;
     margin: 1rem;
-    box-shadow: 8px 8px 0px 0px rgb(55 239 59 / 51%);
+    box-shadow: 8px 8px 0px 0px var(--form-input-outline);
 }
 
 .container form button:hover {
     transform: scale(1.1);
-    box-shadow: 0px 0px 0px 5px rgb(55 239 59 / 51%);
+    box-shadow: 0px 0px 0px 5px var(--form-input-outline);
 }
 .container a {
     color: var(--green-logo);
 }
 
 .container form input {
-    outline: 1px solid rgb(55 239 59 / 51%);
+    outline: 1px solid var(--form-input-outline);
+}
+
+.container form textarea {
+    width: 100%;
+    height: 100%;
 }
 
 .container form input:focus {
-    background-color: rgb(55 239 59 / 51%);
+    background-color: var(--form-input-outline);
     outline: rgba(55, 239, 58, 0.801);
     outline-style: solid;
     outline-width: 2px;

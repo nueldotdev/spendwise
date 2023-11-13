@@ -15,8 +15,8 @@ urlpatterns = [
     path('wallets', user_wallets, name='wallets'),
     path('wallets/create', createWalletView.as_view(), name='wallet-create'),
     path('wallets/<id>', wallet_details, name='wallets-details'),
-    path('wallets/<id>/entries', entries_view, name='wallets-entries'),
+    path('wallets/<id>/entries', EntryView.as_view(), name='wallets-entries'),
     path('wallets/<id>/income', IncomeEntryView.as_view(), name='wallets-income-entry'),
-    path('wallets/<id>/expense', ExpenseEntryView.as_view(), name='wallets-expense-entry'),
+    # path('wallets/<id>/expense', ExpenseEntryView.as_view(), name='wallets-expense-entry'),
 
 ]

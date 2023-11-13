@@ -55,6 +55,7 @@ class Expense(models.Model):
     title = models.CharField(max_length=50)
     amount = models.DecimalField(blank=True, default=0000.00, decimal_places=2, max_digits=10)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    description = models.TextField(blank=True, max_length=100)
     entry = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
@@ -66,6 +67,26 @@ class Income(models.Model):
     title = models.CharField(max_length=50)
     amount = models.DecimalField(blank=True, default=0000.00, decimal_places=2, max_digits=10)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    description = models.TextField(blank=True, max_length=100)
+    entry = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.title
+
+
+class EntryType(models.Model):
+    label = models.CharField(max_length=10, blank=True)
+
+    def __str__(self):
+        return self.label
+
+class Entry(models.Model):
+    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
+    title = models.CharField(max_length=50)
+    amount = models.DecimalField(blank=True, default=0000.00, decimal_places=2, max_digits=10)
+    type_x = models.ForeignKey(EntryType, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    description = models.TextField(blank=True, max_length=100)
     entry = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

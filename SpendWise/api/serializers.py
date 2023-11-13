@@ -55,16 +55,16 @@ class ExpenseEntrySerializer(serializers.ModelSerializer):
 
 class EntriesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = None  # This will be set dynamically in the view
+        model = Entry  # This will be set dynamically in the view
         fields = '__all__'
 
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
+    # def to_representation(self, instance):
+    #     data = super().to_representation(instance)
         
-        # Check the instance's type and add a 'type' field to distinguish between Expense and Income
-        if isinstance(instance, Expense):
-            data['type'] = 'Expense'
-        elif isinstance(instance, Income):
-            data['type'] = 'Income'
+    #     # Check the instance's type and add a 'type' field to distinguish between Expense and Income
+    #     if isinstance(instance, Expense):
+    #         data['type'] = 'Expense'
+    #     elif isinstance(instance, Income):
+    #         data['type'] = 'Income'
         
-        return data
+    #     return data
