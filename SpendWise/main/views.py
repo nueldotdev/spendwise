@@ -5,6 +5,8 @@ from django.contrib import messages
 from django.contrib.auth.models import User, auth
 from django.contrib.auth.decorators import login_required
 
+from operator import attrgetter
+
 from api.models import *
 
 from .models import *
@@ -46,6 +48,23 @@ def home(request):
     #     else:
     #         new_cat = Category.objects.create(name=i)
     #         new_cat.save()
+    # incomes = Income.objects.all()
+    # expenses = Expense.objects.all()
+
+    # # Combine both lists
+    # ex_in = list(expenses) + list(incomes)
+
+    # # Sort the combined list by entry date
+    # sorted_ex_in = sorted(ex_in, key=attrgetter('entry'))
+    # type_x = ''
+    # for i in sorted_ex_in:
+    #   if i in incomes:
+    #     type_x = EntryType.objects.get(label='Income')
+    #   else:
+    #     type_x = EntryType.objects.get(label='Expense')
+
+    #   make_new_entry = Entry.objects.create(wallet=i.wallet, title=i.title, amount=i.amount, category=i.category, description=i.description, type_x=type_x, entry=i.entry)
+    #   make_new_entry.save()
 
     return render(request, 'index.html')
 

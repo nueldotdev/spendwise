@@ -15,7 +15,11 @@
 </head>
 <body>
     <div class="container-main-body">
-        <div class="loader-bar" id="loading-bar"></div>
+        <div class="loader-box" id="loading-box">
+            <div class="loader-parent">
+                <div class="loader"></div>
+            </div>
+        </div>
         <div class="main-screen">
             <div class="main-screen-inner" id="main-screen-inner">
                 <div class="main-top">
@@ -77,6 +81,8 @@
             <form id="expense-form-main">
                 <input type="text" placeholder="Title" id="title-ex" name="title" required>
                 <input type="number" placeholder="Amount" id="amount-ex" name="amount" required>
+                <input type="text" value="Expense" hidden id="entry-type-ex">
+                <textarea name="description" id="descrip-ex" placeholder="Description" cols="30" rows="10"></textarea>
                 <select name="category" id="category_income-ex" class="category_select">
                     <option disabled selected>Select a category...</option>
                 </select>
@@ -95,6 +101,8 @@
             <form id="income-form-main">
                 <input type="text" placeholder="Title" id="title-in" name="title" required>
                 <input type="number" placeholder="Amount" id="amount-in" name="amount" required>
+                <input type="text" value="Income" hidden id="entry-type-in">
+                <textarea name="description" id="desrip-in" placeholder="Description" cols="30" rows="10"></textarea>
                 <select name="category" id="category_income-in" class="category_select">
                     <option disabled selected>Select a category...</option>
                 </select>
