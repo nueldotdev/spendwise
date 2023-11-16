@@ -55,31 +55,46 @@ def home(request):
     # incomes = Income.objects.all()
     # expenses = Expense.objects.all()
 
-    # incomes = list(Income.objects.all())
-    # expenses = list(Expense.objects.all())
+    incomes = list(Income.objects.all())
+    expenses = list(Expense.objects.all())
 
     # # Combine both lists
-    # ex_in = incomes + expenses
+    ex_in = incomes + expenses
 
     # # Sort the combined list by entry date
-    # sorted_ex_in = sorted(ex_in, key=attrgetter('entry'))
+    sorted_ex_in = sorted(ex_in, key=attrgetter('entry'))
 
-    # for obj in sorted_ex_in:
-    #   if isinstance(obj, Income):
-    #     type_x = EntryType.objects.get(label='Income')
-    #   else:
-    #     type_x = EntryType.objects.get(label='Expense')
+    for obj in sorted_ex_in:
+      if isinstance(obj, Income):
+        type_x = EntryType.objects.get(label='Income')
+      else:
+        type_x = EntryType.objects.get(label='Expense')
 
-    #   make_new_entry = Entry.objects.create(
-    #       wallet=obj.wallet,
-    #       title=obj.title,
-    #       amount=obj.amount,
-    #       category=obj.category,
-    #       description=obj.description,
-    #       type_x=type_x,  # Assuming type_x is a ForeignKey to EntryType
-    #       entry=obj.entry
-    #   )
-    #   make_new_entry.save()
+
+      try:
+        existing = Entry.objects.get(
+          wallet=obj.wallet,
+          title=obj.title,
+          amount=obj.amount,
+          category=obj.category,
+          description=obj.description,
+          type_x=type_x,  # Assuming type_x is a ForeignKey to EntryType
+          entry=obj.entry
+        )
+        if existing:
+          pass
+
+      except:
+        make_new_entry = Entry.objects.create(
+          wallet=obj.wallet,
+          title=obj.title,
+          amount=obj.amount,
+          category=obj.category,
+          description=obj.description,
+          type_x=type_x,  # Assuming type_x is a ForeignKey to EntryType
+          entry=obj.entry
+        )
+        make_new_entry.save()
 
     return render(request, 'index.html')
 
