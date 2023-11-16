@@ -11,7 +11,11 @@ from api.models import *
 
 from .models import *
 
+@login_required(login_url='/')
 def home(request):
+  if request.user is None:
+    return redirect('/')
+  else:
     # cat_icons = "\category-icons"
     # new_cat_icons = Category.objects.all()
 
@@ -51,19 +55,30 @@ def home(request):
     # incomes = Income.objects.all()
     # expenses = Expense.objects.all()
 
+    # incomes = list(Income.objects.all())
+    # expenses = list(Expense.objects.all())
+
     # # Combine both lists
-    # ex_in = list(expenses) + list(incomes)
+    # ex_in = incomes + expenses
 
     # # Sort the combined list by entry date
     # sorted_ex_in = sorted(ex_in, key=attrgetter('entry'))
-    # type_x = ''
-    # for i in sorted_ex_in:
-    #   if i in incomes:
+
+    # for obj in sorted_ex_in:
+    #   if isinstance(obj, Income):
     #     type_x = EntryType.objects.get(label='Income')
     #   else:
     #     type_x = EntryType.objects.get(label='Expense')
 
-    #   make_new_entry = Entry.objects.create(wallet=i.wallet, title=i.title, amount=i.amount, category=i.category, description=i.description, type_x=type_x, entry=i.entry)
+    #   make_new_entry = Entry.objects.create(
+    #       wallet=obj.wallet,
+    #       title=obj.title,
+    #       amount=obj.amount,
+    #       category=obj.category,
+    #       description=obj.description,
+    #       type_x=type_x,  # Assuming type_x is a ForeignKey to EntryType
+    #       entry=obj.entry
+    #   )
     #   make_new_entry.save()
 
     return render(request, 'index.html')
