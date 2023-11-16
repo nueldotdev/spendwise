@@ -445,7 +445,7 @@ function getWalletDetails(params, param1) {
                                           catIcons[data.category - 1]
                                         }" alt="">
                                         <div class="entry-det">
-                                            <p>${data.title}</p>
+                                            <p class="entry-title">${data.title}</p>
                                             <p class="sub-note">${
                                               catName[data.category - 1]
                                             } • ${formattedDate}</p>
@@ -457,18 +457,18 @@ function getWalletDetails(params, param1) {
         )}</p></div>
                                     </button>`;
 								
-		// const cardTake = document.getElementById('entry-screen-card-take');
+		    // const cardTake = document.getElementById('entry-screen-card-take');
         // Check if entryCardTake is not null before attempting to insert
-		let entryCardTake;
-		entryCardTake = entryCardSect.firstChild;
+          let entryCardTake;
+          entryCardTake = entryCardSect.firstChild;
 
-		if (entryCardTake) {
-			entryCardSect.insertBefore(entryCard, entryCardTake);
-		} else {
-			// Handle the case where entryCardTake is null
-			entryCardSect.appendChild(entryCard);
-		}
-		// ('beforebegin', entryCard);
+          if (entryCardTake) {
+            entryCardSect.insertBefore(entryCard, entryCardTake);
+          } else {
+            // Handle the case where entryCardTake is null
+            entryCardSect.appendChild(entryCard);
+          }
+          // ('beforebegin', entryCard);
       });
       incomeEx(incomes, incomeScreen);
       incomeEx(expenses, expenseScreen);
@@ -522,36 +522,37 @@ function incomeEx(params, param1) {
     // Creating the card for the entry
     let entryCard = document.createElement("div");
     entryCard.classList.add("entry-card");
-    entryCard.innerHTML = `<div class="card-details">
-                                        <img src="${
-                                          catIcons[data.category - 1]
-                                        }" alt="">
-                                        <div class="entry-det">
-                                            <p>${data.title}</p>
-                                            <p class="sub-note">${
-                                              catName[data.category - 1]
-                                            } • ${formattedDate}</p>
-                                        </div>
-                                    </div>
-                                    <div class="card-amount">
-                                        <p>
-											<span>${type}</span>
-											<i class="fa-solid fa-naira-sign"></i>
-											${parseFloat(data.amount)}
-										</p>
-                                    </div>`;
+    entryCard.innerHTML = `<button class="entry-card-btn">
+    <div class="card-details">
+                          <img src="${
+                            catIcons[data.category - 1]
+                          }" alt="">
+                          <div class="entry-det">
+                              <p class="entry-title">${data.title}</p>
+                              <p class="sub-note">${
+                                catName[data.category - 1]
+                              } • ${formattedDate}</p>
+                          </div>
+                      </div>
+                      <div class="card-amount">
+                          <p>
+                            <span>${type}</span>
+                            <i class="fa-solid fa-naira-sign"></i>
+                            ${parseFloat(data.amount)}
+                          </p></div>
+                      </button>`;
 
 
-	let entryCardTake;
-	entryCardTake = param1.firstChild;
+      let entryCardTake;
+      entryCardTake = param1.firstChild;
 
-	if (entryCardTake) {
-		param1.insertBefore(entryCard, entryCardTake);
-	} else {
-		// Handle the case where entryCardTake is null
-		param1.appendChild(entryCard);
-	}
-    console.log(`${params} Done!`);
+      if (entryCardTake) {
+        param1.insertBefore(entryCard, entryCardTake);
+      } else {
+        // Handle the case where entryCardTake is null
+        param1.appendChild(entryCard);
+      }
+        console.log(`${params} Done!`);
 	
   });
 }
