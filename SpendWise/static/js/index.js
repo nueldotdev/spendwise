@@ -587,11 +587,12 @@ expenseForm.addEventListener("submit", function (e) {
   loader.classList.add("active");
   // Get form data
   const name = document.getElementById("named-ex").innerText;
-  const id = document.getElementById("expense-id").innerText;
-  const title = document.getElementById("title-ex").value;
-  const amount = parseFloat(document.getElementById("amount-ex").value); // Make sure it's a number
-  const category = document.getElementById("category_income-ex").value;
-  const description = document.getElementById("descrip-ex").value;
+  var id = document.getElementById("expense-id").innerText;
+  var title = document.getElementById("title-ex").value;
+  var amount = parseFloat(document.getElementById("amount-ex").value); // Make sure it's a number
+  var category = document.getElementById("category_income-ex").value;
+  var description = document.getElementById("descrip-ex");
+  description = description.value;
   let type_x = 2;
 
   // const formData = new FormData(this);
@@ -720,12 +721,14 @@ incomeForm.addEventListener("submit", function (e) {
   loader.classList.add("active");
   // Get form data
   const name = document.getElementById("named-ex").innerText;
-  const id = document.getElementById("expense-id").innerText;
+  var id = document.getElementById("expense-id").innerText;
 
-  const title = document.getElementById("title-in").value;
-  const amount = parseFloat(document.getElementById("amount-in").value);
-  const category = document.getElementById("category_income-in").value;
-  const description = document.getElementById("descrip-ex").value;
+  var title = document.getElementById("title-in").value;
+  var amount = parseFloat(document.getElementById("amount-in").value);
+  var category = document.getElementById("category_income-in").value;
+  var description = document.getElementById("descrip-in");
+  description = description.value;
+
   let type_x = 1;
 
   const formData = {
