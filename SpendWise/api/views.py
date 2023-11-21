@@ -55,17 +55,17 @@ def create_category(request):
 def user_wallets(request):
     main_user = User.objects.get(username=request.user.username)
     user_acct = Account.objects.get(user_id=main_user)
-
+    
     try:
         wallets = Wallet.objects.filter(owner=user_acct)
 
         for i in wallets:
             try:
-                income_entry = Income.objects.filter(wallet=i)
-                expense_entry = Expense.objects.filter(wallet=i)
+                incomes = Entry.objects.filter(type_x=1, wallet=i)
+                expense_entry = Entry.objects.filter(type_x=2, wallet=i)
                 total_income = 0
                 total_exp = 0
-                for k in income_entry:
+                for k in incomes:
                     total_income = total_income + k.amount
                 for k in expense_entry:
                     total_exp = total_exp + k.amount
@@ -389,30 +389,6 @@ class EntryView(generics.ListCreateAPIView):
 
     def post(self, request, id):
         try:
-            main_user = request.user
-            user_acct = main_user.account
-            get_wallet = Wallet.objects.get(id=id)
-
-            if get_wallet.owner != user_acct:
-                return Response({'message': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
-            else:
-                serializer = EntriesSerializer(data=request.data)
-
-                if serializer.is_valid():
-                    serializer.save(wallet=get_wallet)
-                    return Response({'message': 'Entry was successful', 'data': serializer.data}, status=status.HTTP_201_CREATED)
-                else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        except (User.DoesNotExist, Account.DoesNotExist, Wallet.DoesNotExist):
-            return Response({'message': 'User, Account, or Wallet does not exist'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class IncomeEntryView(generics.CreateAPIView):
-    serializer_class = IncomeEntrySerializer
-
-    def post(self, request, id):
-        try:
             main_user = User.objects.get(username=request.user.username)
             user_acct = Account.objects.get(user_id=main_user)
             get_wallet = Wallet.objects.get(id=id)
@@ -423,8 +399,9 @@ class IncomeEntryView(generics.CreateAPIView):
                 title = request.data.get('title')
                 amount = request.data.get('amount')
                 category = request.data.get('category')
-
-
+                description = request.data.get('description')
+                type_x = request.data.get('type_x')
+                # typeX = EntryType.objects.get(label=type_x)
                 category_name = Category.objects.get(name=category)
 
                 # Manually insert data into the serializer
@@ -433,22 +410,65 @@ class IncomeEntryView(generics.CreateAPIView):
                     'title': title,
                     'amount': amount,
                     'category': category_name.id,
+                    'description': description,
+                    'type_x': type_x,
                 }
 
-                serializer = IncomeEntrySerializer(data=data_to_serialize)
+                serializer = EntriesSerializer(data=data_to_serialize)
 
                 if serializer.is_valid():
-                    serializer.save()
+                    serializer.save(wallet=get_wallet)
                     return Response({'message': 'Entry was successful', 'data': serializer.data}, status=status.HTTP_201_CREATED)
                 else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'message': 'Serializer not valid', 'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        except User.DoesNotExist:
-            return Response({'message': 'User does not exist'}, status=status.HTTP_400_BAD_REQUEST)
-        except Account.DoesNotExist:
-            return Response({'message': 'Account does not exist'}, status=status.HTTP_400_BAD_REQUEST)
-        except Wallet.DoesNotExist:
-            return Response({'message': 'Wallet does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        except (User.DoesNotExist, Account.DoesNotExist, Wallet.DoesNotExist):
+            return Response({'message': 'User, Account, or Wallet does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# class IncomeEntryView(generics.CreateAPIView):
+#     serializer_class = IncomeEntrySerializer
+
+#     def post(self, request, id):
+#         try:
+#             main_user = User.objects.get(username=request.user.username)
+#             user_acct = Account.objects.get(user_id=main_user)
+#             get_wallet = Wallet.objects.get(id=id)
+
+#             if get_wallet.owner != user_acct:
+#                 return Response({'message': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+#             else:
+#                 title = request.data.get('title')
+#                 amount = request.data.get('amount')
+#                 category = request.data.get('category')
+#                 description = request.data.get('description')
+#                 type_x = request.data.get('type_x')
+#                 category_name = Category.objects.get(name=category)
+
+#                 # Manually insert data into the serializer
+#                 data_to_serialize = {
+#                     'wallet': get_wallet.id,
+#                     'title': title,
+#                     'amount': amount,
+#                     'category': category_name.id,
+#                     'description': description,
+#                     'type_x': type_x
+#                 }
+
+#                 serializer = IncomeEntrySerializer(data=data_to_serialize)
+
+#                 if serializer.is_valid():
+#                     serializer.save()
+#                     return Response({'message': 'Entry was successful', 'data': serializer.data}, status=status.HTTP_201_CREATED)
+#                 else:
+#                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#         except User.DoesNotExist:
+#             return Response({'message': 'User does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+#         except Account.DoesNotExist:
+#             return Response({'message': 'Account does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+#         except Wallet.DoesNotExist:
+#             return Response({'message': 'Wallet does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 

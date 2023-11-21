@@ -91,13 +91,6 @@ function getInfo() {
         profileImg = data.profile_img;
         userId = data.user_id;
 
-        // Debugging: Display some of the data in the console
-        // console.log(`Account ID: ${accountId}`);
-        // console.log(`First Name: ${firstName}`);
-        // console.log(`Last Name: ${lastName}`);
-        // console.log(`Balance: ${balance}`);
-        // console.log(`Profile Img: ${profileImg}`);
-
         // You can use the data to update the DOM or perform other actions here
         resolve(data);
       })
@@ -150,41 +143,14 @@ function getWallets() {
       console.log("Wallet data:", data);
       if (data.length > 0) {
         data.forEach((wallet) => {
-          const dateObject = new Date(wallet.last_entry);
-
-          // Get the month as a number (0-11)
-          const monthNumber = dateObject.getMonth();
-
-          // Map the month number to its name
-          const months = [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sept",
-            "Oct",
-            "Nov",
-            "Dec",
-          ];
-          const monthName = months[monthNumber];
-
-          const year = dateObject.getFullYear();
-          // const month = String(dateObject.getMonth() + 1).padStart(2, "0"); 
-		  // Month is zero-based
-          const day = String(dateObject.getDate()).padStart(2, "0");
-
-          const formattedDate = `${day}-${monthName}-${year}`;
+          let entryDate = generateDate(wallet.last_entry);
 
           let containWallet = document.createElement("div");
           containWallet.classList.add("wallet-box-cont");
           containWallet.innerHTML = `<button class="wallet-box" data-wallet-id="${
             wallet.id
           }" onclick="getWalletDetails(${wallet.id}, '${wallet.name}')">
-                                                <p class="date-add">${formattedDate}</p>
+                                                <p class="date-add">${entryDate}</p>
                                                 <h2>${wallet.name}</h2>
                                                 <div class="info">
                                                     <p class="budget">
@@ -400,33 +366,7 @@ function getWalletDetails(params, param1) {
 
       data.forEach((data) => {
         // Formatting the date of the entry correctly
-        const dateObject = new Date(data.entry);
-
-        // Get the month as a number (0-11)
-        const monthNumber = dateObject.getMonth();
-
-        // Map the month number to its name
-        const months = [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sept",
-          "Oct",
-          "Nov",
-          "Dec",
-        ];
-        const monthName = months[monthNumber];
-
-        const year = dateObject.getFullYear();
-        // const month = String(dateObject.getMonth() + 1).padStart(2, "0"); // Month is zero-based
-        const day = String(dateObject.getDate()).padStart(2, "0");
-
-        const formattedDate = `${day}-${monthName}-${year}`;
+        let entryDate = generateDate(data.entry);
         let type = "";
 
         if (data.type_x == 1) {
@@ -448,7 +388,7 @@ function getWalletDetails(params, param1) {
                                             <p class="entry-title">${data.title}</p>
                                             <p class="sub-note">${
                                               catName[data.category - 1]
-                                            } • ${formattedDate}</p>
+                                            } • ${entryDate}</p>
                                         </div>
                                     </div>
                                     <div class="card-amount">
@@ -482,33 +422,7 @@ function getWalletDetails(params, param1) {
 function incomeEx(params, param1) {
   params.forEach((data) => {
     // Formatting the date of the entry correctly again!
-    const dateObject = new Date(data.entry);
-
-    // Get the month as a number (0-11)
-    const monthNumber = dateObject.getMonth();
-
-    // Map the month number to its name
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sept",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    const monthName = months[monthNumber];
-
-    const year = dateObject.getFullYear();
-    // const month = String(dateObject.getMonth() + 1).padStart(2, "0"); // Month is zero-based
-    const day = String(dateObject.getDate()).padStart(2, "0");
-
-    const formattedDate = `${day}-${monthName}-${year}`;
+    let entryDate = generateDate(data.entry);
 
     let type = "";
 
@@ -531,7 +445,7 @@ function incomeEx(params, param1) {
                               <p class="entry-title">${data.title}</p>
                               <p class="sub-note">${
                                 catName[data.category - 1]
-                              } • ${formattedDate}</p>
+                              } • ${entryDate}</p>
                           </div>
                       </div>
                       <div class="card-amount">
@@ -678,7 +592,7 @@ expenseForm.addEventListener("submit", function (e) {
   const amount = parseFloat(document.getElementById("amount-ex").value); // Make sure it's a number
   const category = document.getElementById("category_income-ex").value;
   const description = document.getElementById("descrip-ex").value;
-  const type_x = document.getElementById("entry-type-ex").value;
+  let type_x = 2;
 
   // const formData = new FormData(this);
   const formData = {
@@ -689,7 +603,9 @@ expenseForm.addEventListener("submit", function (e) {
     category: category,
   };
 
-  fetch(`/api/wallets/${id}/expense`, {
+  console.log("FormData:", formData);
+
+  fetch(`/api/wallets/${id}/entries`, {
     method: "POST",
     headers: {
       "X-CSRFToken": csrfToken,
@@ -769,8 +685,15 @@ expenseForm.addEventListener("submit", function (e) {
 									<div class="card-amount">
 										<p><span><i class="fa-solid fa-minus"></i></span><i class="fa-solid fa-naira-sign"></i>${amount}</p>
 									</div>`;
-        const firstCont = entryCardSect.firstElementChild;
-        entryCardSect.insertBefore(entryCard, firstCont);
+        let entryCardTake;
+        entryCardTake = entryCardSect.firstChild;
+
+        if (entryCardTake) {
+          entryCardSect.insertBefore(entryCard, entryCardTake);
+        } else {
+          // Handle the case where entryCardTake is null
+          entryCardSect.appendChild(entryCard);
+        }
         const topExpense = expenseScreen.firstElementChild;
         expenseScreen.insertBefore(entryCard, topExpense);
 
@@ -788,6 +711,8 @@ expenseForm.addEventListener("submit", function (e) {
     });
 });
 
+
+
 // Income form on submit
 incomeForm.addEventListener("submit", function (e) {
   e.preventDefault(); // Prevent the form from submitting normally
@@ -801,7 +726,7 @@ incomeForm.addEventListener("submit", function (e) {
   const amount = parseFloat(document.getElementById("amount-in").value);
   const category = document.getElementById("category_income-in").value;
   const description = document.getElementById("descrip-ex").value;
-  const type_x = document.getElementById("entry-type-ex").value;
+  let type_x = 1;
 
   const formData = {
     title: title,
@@ -811,7 +736,10 @@ incomeForm.addEventListener("submit", function (e) {
     category: category,
   };
 
-  fetch(`/api/wallets/${id}/income`, {
+  console.log("FormData:", formData);
+
+
+  fetch(`/api/wallets/${id}/entries`, {
     method: "POST",
     headers: {
       "X-CSRFToken": csrfToken,
@@ -890,8 +818,16 @@ incomeForm.addEventListener("submit", function (e) {
 									<div class="card-amount">
 										<p><span><i class="fa-solid fa-plus"></i></span><i class="fa-solid fa-naira-sign"></i>${amount}</p>
 									</div>`;
-        const firstCont = entryCardSect.firstElementChild;
-        entryCardSect.insertBefore(entryCard, firstCont);
+
+        let entryCardTake;
+        entryCardTake = entryCardSect.firstChild;
+
+        if (entryCardTake) {
+          entryCardSect.insertBefore(entryCard, entryCardTake);
+        } else {
+          // Handle the case where entryCardTake is null
+          entryCardSect.appendChild(entryCard);
+        }
         console.log(`${entryCard} added to entries on top of ${firstCont}`);
         const topIncome = incomeScreen.firstElementChild;
         incomeScreen.insertBefore(entryCard, topIncome);
@@ -949,7 +885,40 @@ walletForm.addEventListener("submit", function (e) {
       }
     })
     .catch((error) => {
+      console.error("message:", message)
       console.error("Error:", error);
       // Handle errors, e.g., network issues
     });
 });
+
+
+
+function generateDate(params) {
+  const dateObject = new Date(params);
+
+  // Get the month as a number (0-11)
+  const monthNumber = dateObject.getMonth();
+
+  // Map the month number to its name
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sept",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const monthName = months[monthNumber];
+  const year = dateObject.getFullYear();
+  // const month = String(dateObject.getMonth() + 1).padStart(2, "0"); // Month is zero-based
+  const day = String(dateObject.getDate()).padStart(2, "0");
+  const formattedDate = `${day}-${monthName}-${year}`;
+  
+  return formattedDate;
+}
