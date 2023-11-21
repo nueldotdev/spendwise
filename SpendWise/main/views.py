@@ -7,9 +7,9 @@ from django.contrib.auth.decorators import login_required
 
 from operator import attrgetter
 
-from api.models import *
+from api.models import Income, Expense, Entry, EntryType
 
-from .models import *
+#from .models import *
 
 @login_required(login_url='/')
 def home(request):
