@@ -8,4 +8,8 @@ db.sqlite3
 SpendWise/static/js/entry.js
 .vscode/
 record.txt
+docu.md
+todo.md
+buildUp.md
+.gitignore
 >>>>>>> a8f496454d7f2ee1eac1a623014b7608c55efa95
