@@ -10,6 +10,7 @@
     --green-logo: rgb(23 201 0);
     --org-logo: rgb(224 165 0);
 
+    --det-border: rgb(210 225 229);
 
     --form-input-outline: rgb(55 239 59 / 51%);
 
@@ -416,7 +417,6 @@ div.home-main.none {
     align-items: center;
     justify-content: space-between;
     background-color: var(--sslight-bg);
-    padding: 15px;
     border-radius: 10px;
     margin: 0 5px 1.5rem;
     box-shadow: var(--shadow);
@@ -440,6 +440,7 @@ div.home-main.none {
 .entry-card .entry-card-btn {
     text-align: left;
     display: flex;
+    padding: 15px;
     border: none;
     align-items: center;
     width: 100%;
@@ -454,6 +455,7 @@ p.entry-title {
 
 .card-details img {
     margin-right: 7px;
+    width: 60px;
 }
 
 .card-amount {
@@ -724,14 +726,18 @@ p.entry-title {
     }
 
     .entry-card {
-        padding: 10px;
+        /* padding: 10px; */
         border-radius: 10px;
         margin: 0 5px .5rem;
         box-shadow: none;
     }
 
-    .entry-card img {
-        width: 60px;
+    .entry-card .entry-card-btn {
+        padding: 10px;
+    }
+
+    .card-details img {
+        width: 40px;
     }
 
     .entry-card .card-details {

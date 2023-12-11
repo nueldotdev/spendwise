@@ -209,22 +209,22 @@ const entryCardSect = document.getElementById("entry-screen");
 const incomeScreen = document.getElementById("income-screen");
 const expenseScreen = document.getElementById("expense-screen");
 
-function getWalletDetails(params, param1) {
+function getWalletDetails(walletID, walletName) {
   //NOTE: (param) => wallet.id
   //NOTE: (param1) => wallet.name
   loader.classList.add("active");
   const getIdentifier = document.querySelectorAll(".identified_wallet");
   const setWalletName = document.querySelectorAll(".named_wallet");
   getIdentifier.forEach((element) => {
-    element.innerText = params; //put wallet id in transaction entry-form
+    element.innerText = walletID; //put wallet id in transaction entry-form
   });
   setWalletName.forEach((element) => {
-    element.innerText = param1; //put wallet name in transaction entry-form
+    element.innerText = walletName; //put wallet name in transaction entry-form
   });
 
   overviewScreen.innerHTML = ``;
 
-  fetch(`/api/wallets/${params}`, {
+  fetch(`/api/wallets/${walletID}`, {
     method: "GET",
   })
     .then((response) => {
@@ -340,9 +340,9 @@ function getWalletDetails(params, param1) {
     });
 
   hiddenTabs.classList.remove("hide");
-  walletName.innerText = `${param1}`;
+  walletName.innerText = `${walletName}`;
 
-  fetch(`/api/wallets/${params}/entries`, {
+  fetch(`/api/wallets/${walletID}/entries`, {
     method: "GET",
   })
     .then((response) => {
@@ -353,10 +353,10 @@ function getWalletDetails(params, param1) {
       }
     })
     .then((data) => {
-    //   data.reverse();
+      //   data.reverse();
 
       for (let index = 0; index < data.length; index++) {
-		allEntries.push(data[index]);
+        allEntries.push(data[index]);
         if (data[index].type_x == 1) {
           incomes.push(data[index]);
         } else {
@@ -380,35 +380,36 @@ function getWalletDetails(params, param1) {
         let entryCard = document.createElement("div");
         entryCard.classList.add("entry-card");
         entryCard.innerHTML = `<button class="entry-card-btn">
-									<div class="card-details">
+									                  <div class="card-details">
                                         <img src="${
                                           catIcons[data.category - 1]
                                         }" alt="">
                                         <div class="entry-det">
-                                            <p class="entry-title">${data.title}</p>
+                                            <p class="entry-title">${
+                                              data.title
+                                            }</p>
                                             <p class="sub-note">${
                                               catName[data.category - 1]
                                             } • ${entryDate}</p>
                                         </div>
                                     </div>
                                     <div class="card-amount">
-                                        <p><span>${type}</span><i class="fa-solid fa-naira-sign"></i>${parseFloat(
-          data.amount
-        )}</p></div>
-                                    </button>`;
-								
-		    // const cardTake = document.getElementById('entry-screen-card-take');
-        // Check if entryCardTake is not null before attempting to insert
-          let entryCardTake;
-          entryCardTake = entryCardSect.firstChild;
+                                        <p><span>${type}</span><i class="fa-solid fa-naira-sign">
+                                            </i>${parseFloat(data.amount)}
+                                        </p>
+                                    </div>
+                                  </button>`;
 
-          if (entryCardTake) {
-            entryCardSect.insertBefore(entryCard, entryCardTake);
-          } else {
-            // Handle the case where entryCardTake is null
-            entryCardSect.appendChild(entryCard);
-          }
-          // ('beforebegin', entryCard);
+        // Check if entryCardTake is not null before attempting to insert
+        let entryCardTake;
+        entryCardTake = entryCardSect.firstChild;
+
+        if (entryCardTake) {
+          entryCardSect.insertBefore(entryCard, entryCardTake);
+        } else {
+          // Handle the case where entryCardTake is null
+          entryCardSect.appendChild(entryCard);
+        }
       });
       incomeEx(incomes, incomeScreen);
       incomeEx(expenses, expenseScreen);
@@ -438,9 +439,7 @@ function incomeEx(params, param1) {
     entryCard.classList.add("entry-card");
     entryCard.innerHTML = `<button class="entry-card-btn">
     <div class="card-details">
-                          <img src="${
-                            catIcons[data.category - 1]
-                          }" alt="">
+                          <img src="${catIcons[data.category - 1]}" alt="">
                           <div class="entry-det">
                               <p class="entry-title">${data.title}</p>
                               <p class="sub-note">${
@@ -456,18 +455,16 @@ function incomeEx(params, param1) {
                           </p></div>
                       </button>`;
 
+    let entryCardTake;
+    entryCardTake = param1.firstChild;
 
-      let entryCardTake;
-      entryCardTake = param1.firstChild;
-
-      if (entryCardTake) {
-        param1.insertBefore(entryCard, entryCardTake);
-      } else {
-        // Handle the case where entryCardTake is null
-        param1.appendChild(entryCard);
-      }
-        console.log(`${params} Done!`);
-	
+    if (entryCardTake) {
+      param1.insertBefore(entryCard, entryCardTake);
+    } else {
+      // Handle the case where entryCardTake is null
+      param1.appendChild(entryCard);
+    }
+    console.log(`${params} Done!`);
   });
 }
 
@@ -546,6 +543,7 @@ function progressCircle(param, param1, param2) {
 const entryForm = document.querySelector(".entry-forms");
 const categoryEntries = document.querySelectorAll(".category_select");
 const formBackBtns = document.querySelectorAll(".back-arrow-btn");
+const formBackBtnForms = document.querySelectorAll(".back-arrow-btn-forms");
 
 function getForm(params) {
   const fromToGet = document.getElementById(params);
@@ -574,6 +572,14 @@ formBackBtns.forEach((btn) => {
   });
 });
 
+formBackBtnForms.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const btnParent = btn.parentElement;
+    btnParent.parentElement.style.display = "none";
+    entryForm.classList.remove("active");
+  });
+});
+
 // Handling the income and expense entries
 const expenseForm = document.getElementById("expense-form-main");
 const incomeForm = document.getElementById("income-form-main");
@@ -586,8 +592,8 @@ expenseForm.addEventListener("submit", function (e) {
   // console.log(token)
   loader.classList.add("active");
   // Get form data
-  const name = document.getElementById("named-ex").innerText;
-  var id = document.getElementById("expense-id").innerText;
+  const walletName = document.getElementById("named-ex").innerText;
+  var walletId = document.getElementById("expense-id").innerText;
   var title = document.getElementById("title-ex").value;
   var amount = parseFloat(document.getElementById("amount-ex").value); // Make sure it's a number
   var category = document.getElementById("category_income-ex").value;
@@ -606,7 +612,7 @@ expenseForm.addEventListener("submit", function (e) {
 
   console.log("FormData:", formData);
 
-  fetch(`/api/wallets/${id}/entries`, {
+  fetch(`/api/wallets/${walletId}/entries`, {
     method: "POST",
     headers: {
       "X-CSRFToken": csrfToken,
@@ -622,81 +628,82 @@ expenseForm.addEventListener("submit", function (e) {
         console.log(data.message);
         resultDiv.innerHTML = "<p>Entry was successful!</p>";
         loader.classList.add("active");
+        getWalletDetails(walletId, walletName);
 
-        // Getting the expense thingy
-        const expenseUpdate = document.getElementById("total-expense-entered");
-        const balanceUpdate = document.getElementById("total-balance");
-        const bgSpent = document.getElementById("limit-bg-spt");
+        // // Getting the expense thingy
+        // const expenseUpdate = document.getElementById("total-expense-entered");
+        // const balanceUpdate = document.getElementById("total-balance");
+        // const bgSpent = document.getElementById("limit-bg-spt");
 
-        // Updating the expense thingy
-        expenseUpdate.innerText = parseFloat(expenseUpdate.innerText) + amount;
-        balanceUpdate.innerText = parseFloat(balanceUpdate.innerText) - amount;
-        bgSpent.innerText = parseFloat(bgSpent.innerText) + amount;
+        // // Updating the expense thingy
+        // expenseUpdate.innerText = parseFloat(expenseUpdate.innerText) + amount;
+        // balanceUpdate.innerText = parseFloat(balanceUpdate.innerText) - amount;
+        // bgSpent.innerText = parseFloat(bgSpent.innerText) + amount;
 
-        //Forming the date, I am in pain😭
-        const today = new Date();
+        // //Forming the date, I am in pain😭
+        // const today = new Date();
 
-        // Get the day, month, and year
-        const day = today.getDate();
-        const monthIndex = today.getMonth();
-        const year = today.getFullYear();
+        // // Get the day, month, and year
+        // const day = today.getDate();
+        // const monthIndex = today.getMonth();
+        // const year = today.getFullYear();
 
-        // Create an array of month names
-        const monthNames = [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sept",
-          "Oct",
-          "Nov",
-          "Dec",
-        ];
+        // // Create an array of month names
+        // const monthNames = [
+        //   "Jan",
+        //   "Feb",
+        //   "Mar",
+        //   "Apr",
+        //   "May",
+        //   "Jun",
+        //   "Jul",
+        //   "Aug",
+        //   "Sept",
+        //   "Oct",
+        //   "Nov",
+        //   "Dec",
+        // ];
 
-        // Get the month name based on the month index
-        const monthName = monthNames[monthIndex];
+        // // Get the month name based on the month index
+        // const monthName = monthNames[monthIndex];
 
-        // Format the date
-        const formattedDate = `${day}-${monthName}-${year}`;
+        // // Format the date
+        // const formattedDate = `${day}-${monthName}-${year}`;
 
-        let icon;
+        // let icon;
 
-        for (let index = 0; index < catName.length; index++) {
-          const element = catName[index];
-          if (element == category) {
-            icon = catIcons[index];
-          }
-        }
+        // for (let index = 0; index < catName.length; index++) {
+        //   const element = catName[index];
+        //   if (element == category) {
+        //     icon = catIcons[index];
+        //   }
+        // }
 
-        // Very very repetitive code here, hate to see it but I AM DRAINED
-        // Creating cards for all entries
-        let entryCard = document.createElement("div");
-        entryCard.classList.add("entry-card");
-        entryCard.innerHTML = `<div class="card-details">
-										<img src="${icon}" alt="">
-										<div class="entry-det">
-											<p>${title}</p>
-											<p class="sub-note">${category} • ${formattedDate}</p>
-										</div>
-									</div>
-									<div class="card-amount">
-										<p><span><i class="fa-solid fa-minus"></i></span><i class="fa-solid fa-naira-sign"></i>${amount}</p>
-									</div>`;
-        let entryCardTake;
-        entryCardTake = entryCardSect.firstChild;
+        // // Very very repetitive code here, hate to see it but I AM DRAINED
+        // // Creating cards for all entries
+        // let entryCard = document.createElement("div");
+        // entryCard.classList.add("entry-card");
+        // entryCard.innerHTML = `<div class="card-details">
+				// 						<img src="${icon}" alt="">
+				// 						<div class="entry-det">
+				// 							<p>${title}</p>
+				// 							<p class="sub-note">${category} • ${formattedDate}</p>
+				// 						</div>
+				// 					</div>
+				// 					<div class="card-amount">
+				// 						<p><span><i class="fa-solid fa-minus"></i></span><i class="fa-solid fa-naira-sign"></i>${amount}</p>
+				// 					</div>`;
+        // let entryCardTake;
+        // entryCardTake = entryCardSect.firstChild;
 
-        if (entryCardTake) {
-          entryCardSect.insertBefore(entryCard, entryCardTake);
-        } else {
-          // Handle the case where entryCardTake is null
-          entryCardSect.appendChild(entryCard);
-        }
-        const topExpense = expenseScreen.firstElementChild;
-        expenseScreen.insertBefore(entryCard, topExpense);
+        // if (entryCardTake) {
+        //   entryCardSect.insertBefore(entryCard, entryCardTake);
+        // } else {
+        //   // Handle the case where entryCardTake is null
+        //   entryCardSect.appendChild(entryCard);
+        // }
+        // const topExpense = expenseScreen.firstElementChild;
+        // expenseScreen.insertBefore(entryCard, topExpense);
 
         loader.classList.remove("active");
       } else {
@@ -712,21 +719,19 @@ expenseForm.addEventListener("submit", function (e) {
     });
 });
 
-
-
 // Income form on submit
 incomeForm.addEventListener("submit", function (e) {
   e.preventDefault(); // Prevent the form from submitting normally
   // const token = document.getElementById('token').innerText;
   loader.classList.add("active");
   // Get form data
-  const name = document.getElementById("named-ex").innerText;
-  var id = document.getElementById("expense-id").innerText;
+  const walletName = document.getElementById("named-ex").innerText;
+  var walletId = document.getElementById("expense-id").innerText;
 
   var title = document.getElementById("title-in").value;
   var amount = parseFloat(document.getElementById("amount-in").value);
   var category = document.getElementById("category_income-in").value;
-  var description = document.getElementById("descrip-in");
+  var description = document.getElementById("descrip-ex");
   description = description.value;
 
   let type_x = 1;
@@ -741,8 +746,7 @@ incomeForm.addEventListener("submit", function (e) {
 
   console.log("FormData:", formData);
 
-
-  fetch(`/api/wallets/${id}/entries`, {
+  fetch(`/api/wallets/${walletId}/entries`, {
     method: "POST",
     headers: {
       "X-CSRFToken": csrfToken,
@@ -755,85 +759,90 @@ incomeForm.addEventListener("submit", function (e) {
       // Handle the response from the server
       const resultDiv = document.getElementById("income-result");
       if (data.message === "Entry was successful") {
+        console.log(data.message);
         resultDiv.innerHTML = "<p>Entry was successful!</p>";
+        loader.classList.add("active");
+        getWalletDetails(walletId, walletName);
+      // if (data.message === "Entry was successful") {
+      //   resultDiv.innerHTML = "<p>Entry was successful!</p>";
 
-        // Can't find a way to change the ui to show the updated details
-        // So I'll do it manually and find a way later
+      //   // Can't find a way to change the ui to show the updated details
+      //   // So I'll do it manually and find a way later
 
-        // Getting the income thingy
-        const incomeUpdate = document.getElementById("total-income-entered");
-        const balanceUpdate = document.getElementById("total-balance");
+      //   // Getting the income thingy
+      //   const incomeUpdate = document.getElementById("total-income-entered");
+      //   const balanceUpdate = document.getElementById("total-balance");
 
-        // Updating the income thingy
-        incomeUpdate.innerText = parseFloat(incomeUpdate.innerText) + amount;
-        balanceUpdate.innerText = parseFloat(balanceUpdate.innerText) + amount;
+      //   // Updating the income thingy
+      //   incomeUpdate.innerText = parseFloat(incomeUpdate.innerText) + amount;
+      //   balanceUpdate.innerText = parseFloat(balanceUpdate.innerText) + amount;
 
-        //Forming the date, I am in pain😭
-        const today = new Date();
+      //   //Forming the date, I am in pain😭
+      //   const today = new Date();
 
-        // Get the day, month, and year
-        const day = today.getDate();
-        const monthIndex = today.getMonth();
-        const year = today.getFullYear();
+      //   // Get the day, month, and year
+      //   const day = today.getDate();
+      //   const monthIndex = today.getMonth();
+      //   const year = today.getFullYear();
 
-        // Create an array of month names
-        const monthNames = [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sept",
-          "Oct",
-          "Nov",
-          "Dec",
-        ];
+      //   // Create an array of month names
+      //   const monthNames = [
+      //     "Jan",
+      //     "Feb",
+      //     "Mar",
+      //     "Apr",
+      //     "May",
+      //     "Jun",
+      //     "Jul",
+      //     "Aug",
+      //     "Sept",
+      //     "Oct",
+      //     "Nov",
+      //     "Dec",
+      //   ];
 
-        // Get the month name based on the month index
-        const monthName = monthNames[monthIndex];
+      //   // Get the month name based on the month index
+      //   const monthName = monthNames[monthIndex];
 
-        // Format the date
-        const formattedDate = `${day}-${monthName}-${year}`;
+      //   // Format the date
+      //   const formattedDate = `${day}-${monthName}-${year}`;
 
-        let icon;
+      //   let icon;
 
-        for (let index = 0; index < catName.length; index++) {
-          const element = catName[index];
-          if (element == category) {
-            icon = catIcons[index];
-          }
-        }
+      //   for (let index = 0; index < catName.length; index++) {
+      //     const element = catName[index];
+      //     if (element == category) {
+      //       icon = catIcons[index];
+      //     }
+      //   }
 
-        // Very very repetitive code here, hate to see it but I AM DRAINED
-        // Creating cards for all entries
-        let entryCard = document.createElement("div");
-        entryCard.classList.add("entry-card");
-        entryCard.innerHTML = `<div class="card-details">
-										<img src="${icon}" alt="">
-										<div class="entry-det">
-											<p>${title}</p>
-											<p class="sub-note">${category} • ${formattedDate}</p>
-										</div>
-									</div>
-									<div class="card-amount">
-										<p><span><i class="fa-solid fa-plus"></i></span><i class="fa-solid fa-naira-sign"></i>${amount}</p>
-									</div>`;
+      //   // Very very repetitive code here, hate to see it but I AM DRAINED
+      //   // Creating cards for all entries
+      //   let entryCard = document.createElement("div");
+      //   entryCard.classList.add("entry-card");
+      //   entryCard.innerHTML = `<div class="card-details">
+			// 							<img src="${icon}" alt="">
+			// 							<div class="entry-det">
+			// 								<p>${title}</p>
+			// 								<p class="sub-note">${category} • ${formattedDate}</p>
+			// 							</div>
+			// 						</div>
+			// 						<div class="card-amount">
+			// 							<p><span><i class="fa-solid fa-plus"></i></span><i class="fa-solid fa-naira-sign"></i>${amount}</p>
+			// 						</div>`;
 
-        let entryCardTake;
-        entryCardTake = entryCardSect.firstChild;
+      //   let entryCardTake;
+      //   entryCardTake = entryCardSect.firstChild;
 
-        if (entryCardTake) {
-          entryCardSect.insertBefore(entryCard, entryCardTake);
-        } else {
-          // Handle the case where entryCardTake is null
-          entryCardSect.appendChild(entryCard);
-        }
-        console.log(`${entryCard} added to entries on top of ${firstCont}`);
-        const topIncome = incomeScreen.firstElementChild;
-        incomeScreen.insertBefore(entryCard, topIncome);
+      //   if (entryCardTake) {
+      //     entryCardSect.insertBefore(entryCard, entryCardTake);
+      //   } else {
+      //     // Handle the case where entryCardTake is null
+      //     entryCardSect.appendChild(entryCard);
+      //   }
+      //   console.log(`${entryCard} added to entries on top of ${firstCont}`);
+      //   const topIncome = incomeScreen.firstElementChild;
+      //   incomeScreen.insertBefore(entryCard, topIncome);
 
         loader.classList.remove("active");
       } else {
@@ -847,11 +856,6 @@ incomeForm.addEventListener("submit", function (e) {
       // Handle errors, e.g., network issues
     });
 });
-
-
-
-
-
 
 // wallet entry/creation form
 
@@ -888,13 +892,11 @@ walletForm.addEventListener("submit", function (e) {
       }
     })
     .catch((error) => {
-      console.error("message:", message)
+      console.error("message:", message);
       console.error("Error:", error);
       // Handle errors, e.g., network issues
     });
 });
-
-
 
 function generateDate(params) {
   const dateObject = new Date(params);
@@ -922,6 +924,18 @@ function generateDate(params) {
   // const month = String(dateObject.getMonth() + 1).padStart(2, "0"); // Month is zero-based
   const day = String(dateObject.getDate()).padStart(2, "0");
   const formattedDate = `${day}-${monthName}-${year}`;
-  
+
   return formattedDate;
+}
+
+function entryDetail(params) {
+  // Get requested entry
+  let mainEntry;
+
+  for (let index = 0; index < allEntries.length; index++) {
+    // const element = array[index];
+    if (params == allEntries[index].id) {
+      mainEntry = allEntries[index];
+    }
+  }
 }
